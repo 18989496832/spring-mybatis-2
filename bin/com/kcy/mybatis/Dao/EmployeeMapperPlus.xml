@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kcy.mybatis.Dao.EmployeeMapperPlus">
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+ 	<resultMap type="com.kcy.mybatis.bean.Employee" id="MyEmployee">
+ 		<id  column="id"  property="id"/>
+ 		<result column="email" 	property="e_mail"/>
+ 		<result column="name" 	property="name"/>
+ 		<result column="age"  	property="age"/>
+ 	</resultMap>
+	<select id="getEmployeeById" resultMap="MyEmployee">
+		select id,name,age,email from tbl_employee where id = #{id}
+	</select>
+	<resultMap type="com.kcy.mybatis.bean.Employee" id="MyEmpDept">
+		<id column="id"  property="id"/>
+		<result column="email" 	property="e_mail"/>
+		<result column="name" 	property="name"/>
+ 		<result column="age"  	property="age"/>
+ 		<result column="deptId"  	property="dept.id"/>
+ 		<result column="deptName"  	property="dept.deptName"/>
+	</resultMap>
+	<resultMap type="com.kcy.mybatis.bean.Employee" id="MyEmpDept2">
+	    <id column="id"  property="id"/>
+	    <result column="name" 	property="name"/>
+ 		<result column="age"  	property="age"/>
+		<result column="email" 	property="e_mail"/>
+		<association property="dept" javaType="com.kcy.mybatis.bean.Department">
+			<id column="deptId"  property="id"/>
+ 			<result column="deptName"  	property="deptName"/>
+		</association>
+	</resultMap>
+	<select id="getEmployeeAndDeptById" resultMap="MyEmpDept2">
+		SELECT e.id,e.age,e.name,e.email,d.id deptId,d.dept_name deptName FROM  tbl_employee e , tbl_department d 
+		WHERE e.dept =d.id  AND d.id AND e.id=1
+	</select>
+	<!-- 分布延迟查询,需要属性dept的时候才查询 -->
+	<resultMap type="com.kcy.mybatis.bean.Employee" id="MyEmpDept3">
+		<id column="id"  property="id"/>
+	    <result column="name" 	property="name"/>
+ 		<result column="age"  	property="age"/>
+		<result column="email" 	property="e_mail"/>
+		<association property="dept" select="com.kcy.mybatis.Dao.DepartmentMapper.getDeptById" column="dept"></association>
+	</resultMap>
+	<select id="getEmployeeAndDeptByStep" resultMap="MyEmpDept3">
+		select *  from tbl_employee where id = #{id}
+	</select>
+	
+	<resultMap type="com.kcy.mybatis.bean.Employee" id="MyEmployee5">
+ 		<id  column="id"  property="id"/>
+ 		<result column="email" 	property="e_mail"/>
+ 		<result column="name" 	property="name"/>
+ 		<result column="age"  	property="age"/>
+ 	</resultMap>
+	<select id="getEmployeeByDeptId" resultMap="MyEmployee5">
+		select id,name,age,email from tbl_employee where dept = #{dept}
+	</select>
+	<select id="getEmpByDynamicCondition"  resultMap="MyEmployee5">
+		select * from tbl_employee  where  id = #{id}
+		<if test="name != null">  
+			and name = #{name}
+		</if>
+	</select>
+</mapper>

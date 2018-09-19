@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kcy.mybatis.Dao.DepartmentMapper">
+	<select id="getDeptById" resultType="com.kcy.mybatis.bean.Department">
+		select id,dept_name deptName from tbl_department where id = #{id}
+	</select>
+	<!-- 分布延迟查询,查询结果中包括一个集合-->
+	<resultMap type="com.kcy.mybatis.bean.Department" id="MyEmpDept4">
+		<id column="id"  property="id"/>
+	    <result column="dept_name" 	property="deptName"/>
+		<collection property="emps" 
+			select="com.kcy.mybatis.Dao.EmployeeMapperPlus.getEmployeeByDeptId" 
+			column="{dept=id}" fetchType="lazy"></collection>		
+	</resultMap>
+	<select id="getDeptAndEmpsById"  resultMap="MyEmpDept4">
+		select id,dept_name from tbl_department where id = #{id}
+	</select>
+</mapper>
